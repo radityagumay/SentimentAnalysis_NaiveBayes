@@ -85,7 +85,7 @@ class NaiveBayes(object):
         |V|            = vocabulary, total count of DIFFERENT word attribute in training set.
     '''
     def compute_the_conditional_probability_or_likelihood(self):
-
+        print("hello")
 
 
 naive = NaiveBayes()
