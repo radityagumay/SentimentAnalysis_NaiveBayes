@@ -58,11 +58,13 @@ class NaiveBayes(object):
                     self.frequency_table[token] = 1
         for neg in doc_negative:
             tokens = word_tokenize(neg[0])
+            tokens = self.preprocessing.tokenize(tokens)
             for token in tokens:
                 if token in self.frequency_table:
                     self.frequency_table[token] += 1
                 else:
                     self.frequency_table[token] = 1
+        print(self.frequency_table)
 
     # 3.
     def compute_the_prior(self):
@@ -89,7 +91,7 @@ class NaiveBayes(object):
         
         |V|            = vocabulary, total count of DIFFERENT word attribute in training set.
         
-                p(amazing|positive) = [frequency_table] + 1 / total count of word in class 'positive' + tokens
+        p(amazing|positive) = [frequency_table] + 1 / total count of word in class 'positive' + tokens
     '''
     def compute_the_conditional_probability_or_likelihood(self):
         print("hello")
@@ -104,12 +106,12 @@ class Preprocessing(object):
         n_tokens = []
         for token in tokens:
             if len(token) > 3:
-                stem = self.stemmer.stem(token)
-                punct = stem.translate(self.tablePunctuation)
+                #stem = self.stemmer.stem(token)
+                punct = token.translate(self.tablePunctuation)
                 if punct is not None:
                     stop = punct not in set(stopwords.words('english'))
                     if stop:
-                        n_tokens.append(stop)
+                        n_tokens.append(punct)
         return n_tokens
 
 naive = NaiveBayes()
