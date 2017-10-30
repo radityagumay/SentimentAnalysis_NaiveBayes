@@ -1,8 +1,10 @@
+import sys, unicodedata
 import os
 import csv
 import random
-import nltk
-
+from nltk.tokenize import word_tokenize
+from nltk.stem.porter import *
+from nltk.corpus import stopwords
 
 class NaiveBayes(object):
     def __init__(self):
@@ -14,6 +16,8 @@ class NaiveBayes(object):
 
         self.negative_prior = 0
         self.positive_prior = 0
+
+        self.preprocessing = Preprocessing()
 
     def load_positive_document(self):
         document = []
@@ -45,14 +49,15 @@ class NaiveBayes(object):
     # 2.
     def create_frequency_table(self, doc_positive, doc_negative):
         for pos in doc_positive:
-            tokens = nltk.word_tokenize(pos[0])
+            tokens = word_tokenize(pos[0])
+            tokens = self.preprocessing.tokenize(tokens)
             for token in tokens:
                 if token in self.frequency_table:
                     self.frequency_table[token] += 1
                 else:
                     self.frequency_table[token] = 1
         for neg in doc_negative:
-            tokens = nltk.word_tokenize(neg[0])
+            tokens = word_tokenize(neg[0])
             for token in tokens:
                 if token in self.frequency_table:
                     self.frequency_table[token] += 1
@@ -83,10 +88,29 @@ class NaiveBayes(object):
         count(c)       = total count of word attribute in particular class occurs in training set.
         
         |V|            = vocabulary, total count of DIFFERENT word attribute in training set.
+        
+                p(amazing|positive) = [frequency_table] + 1 / total count of word in class 'positive' + tokens
     '''
     def compute_the_conditional_probability_or_likelihood(self):
         print("hello")
 
+
+class Preprocessing(object):
+    def __init__(self):
+        self.stemmer = PorterStemmer()
+        self.tablePunctuation = dict.fromkeys(i for i in range(sys.maxunicode) if unicodedata.category(chr(i)).startswith('P'))
+
+    def tokenize(self, tokens):
+        n_tokens = []
+        for token in tokens:
+            if len(token) > 3:
+                stem = self.stemmer.stem(token)
+                punct = stem.translate(self.tablePunctuation)
+                if punct is not None:
+                    stop = punct not in set(stopwords.words('english'))
+                    if stop:
+                        n_tokens.append(stop)
+        return n_tokens
 
 naive = NaiveBayes()
 naive.run()
