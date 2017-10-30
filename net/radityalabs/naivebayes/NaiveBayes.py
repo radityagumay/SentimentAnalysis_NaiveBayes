@@ -11,8 +11,8 @@ class NaiveBayes(object):
         self.path = os.path.expanduser(
             "~/PycharmProjects/SentimentAnalysis_NaiveBayes/net/radityalabs/data/positive-negative-data/")
         self.frequency_table = {}
-        self.number_of_positive = 5
-        self.number_of_negative = 3
+        self.number_of_positive = 15
+        self.number_of_negative = 13
 
         self.negative_prior = 0
         self.positive_prior = 0
@@ -52,6 +52,7 @@ class NaiveBayes(object):
             tokens = word_tokenize(pos[0])
             tokens = self.preprocessing.tokenize(tokens)
             for token in tokens:
+                token = "p-" + token
                 if token in self.frequency_table:
                     self.frequency_table[token] += 1
                 else:
@@ -60,6 +61,7 @@ class NaiveBayes(object):
             tokens = word_tokenize(neg[0])
             tokens = self.preprocessing.tokenize(tokens)
             for token in tokens:
+                token = "n-" + token
                 if token in self.frequency_table:
                     self.frequency_table[token] += 1
                 else:
