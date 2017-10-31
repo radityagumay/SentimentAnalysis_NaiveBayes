@@ -19,6 +19,9 @@ class NaiveBayes(object):
 
         self.preprocessing = Preprocessing()
 
+        self.number_count_of_positive_tokens = 0
+        self.number_count_of_negative_tokens = 0
+
     def load_positive_document(self):
         document = []
         with open(self.path + "positive-data.csv", newline='', encoding='utf-8') as f:
@@ -57,6 +60,7 @@ class NaiveBayes(object):
                     self.frequency_table[token] += 1
                 else:
                     self.frequency_table[token] = 1
+                self.number_count_of_positive_tokens += 1
         for neg in doc_negative:
             tokens = word_tokenize(neg[0])
             tokens = self.preprocessing.tokenize(tokens)
@@ -66,7 +70,7 @@ class NaiveBayes(object):
                     self.frequency_table[token] += 1
                 else:
                     self.frequency_table[token] = 1
-        print(self.frequency_table)
+                self.number_count_of_negative_tokens += 1
 
     # 3.
     def compute_the_prior(self):
@@ -96,7 +100,7 @@ class NaiveBayes(object):
         p(amazing|positive) = [frequency_table] + 1 / total count of word in class 'positive' + tokens
     '''
     def compute_the_conditional_probability_or_likelihood(self):
-        print("hello")
+        p = self.frequency_table.keys()
 
 
 class Preprocessing(object):
@@ -108,7 +112,8 @@ class Preprocessing(object):
         n_tokens = []
         for token in tokens:
             if len(token) > 3:
-                #stem = self.stemmer.stem(token)
+                # we dont need stemmer for a moment
+                # stem = self.stemmer.stem(token)
                 punct = token.translate(self.tablePunctuation)
                 if punct is not None:
                     stop = punct not in set(stopwords.words('english'))
@@ -116,5 +121,18 @@ class Preprocessing(object):
                         n_tokens.append(punct)
         return n_tokens
 
-naive = NaiveBayes()
-naive.run()
+# naive = NaiveBayes()
+# naive.run()
+
+def multiply(x, y):
+    return x * y
+
+def add(x, y):
+    return x + y
+
+func = [multiply, add]
+for i in range(5):
+    value = list(map(lambda x: x(i, 2), func))
+    print(value)
+
+
