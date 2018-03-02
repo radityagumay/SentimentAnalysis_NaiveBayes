@@ -6,6 +6,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem.porter import *
 from nltk.corpus import stopwords
 
+
 class NaiveBayes(object):
     def __init__(self):
         self.path = os.path.expanduser(
@@ -18,9 +19,6 @@ class NaiveBayes(object):
         self.positive_prior = 0
 
         self.preprocessing = Preprocessing()
-
-        self.number_count_of_positive_tokens = 0
-        self.number_count_of_negative_tokens = 0
 
     def load_positive_document(self):
         document = []
@@ -55,22 +53,20 @@ class NaiveBayes(object):
             tokens = word_tokenize(pos[0])
             tokens = self.preprocessing.tokenize(tokens)
             for token in tokens:
-                token = "p-" + token
                 if token in self.frequency_table:
                     self.frequency_table[token] += 1
                 else:
-                    self.frequency_table[token] = 1
-                self.number_count_of_positive_tokens += 1
+                    self.frequency_table[token] = {1, "-"}
         for neg in doc_negative:
             tokens = word_tokenize(neg[0])
             tokens = self.preprocessing.tokenize(tokens)
             for token in tokens:
-                token = "n-" + token
                 if token in self.frequency_table:
+                    neg_dic = self.frequency_table.keys()
+
                     self.frequency_table[token] += 1
                 else:
-                    self.frequency_table[token] = 1
-                self.number_count_of_negative_tokens += 1
+                    self.frequency_table[token] = {"-", 1}
 
     # 3.
     def compute_the_prior(self):
@@ -80,6 +76,11 @@ class NaiveBayes(object):
 
     # 4.
     '''
+    P(C) = or we could say,
+         = prior probabiliy is probability before run test
+         
+    Posterior Probability = is P(C) * test evidence
+    
     equation for compute probability likelihood.
     p(w|c) = count(w,c) + 1 / count(c) + |V|
     
@@ -99,6 +100,7 @@ class NaiveBayes(object):
         
         p(amazing|positive) = [frequency_table] + 1 / total count of word in class 'positive' + tokens
     '''
+
     def compute_the_conditional_probability_or_likelihood(self):
         p = self.frequency_table.keys()
 
@@ -106,7 +108,8 @@ class NaiveBayes(object):
 class Preprocessing(object):
     def __init__(self):
         self.stemmer = PorterStemmer()
-        self.tablePunctuation = dict.fromkeys(i for i in range(sys.maxunicode) if unicodedata.category(chr(i)).startswith('P'))
+        self.tablePunctuation = dict.fromkeys(
+            i for i in range(sys.maxunicode) if unicodedata.category(chr(i)).startswith('P'))
 
     def tokenize(self, tokens):
         n_tokens = []
@@ -121,18 +124,6 @@ class Preprocessing(object):
                         n_tokens.append(punct)
         return n_tokens
 
-# naive = NaiveBayes()
-# naive.run()
 
-def multiply(x, y):
-    return x * y
-
-def add(x, y):
-    return x + y
-
-func = [multiply, add]
-for i in range(5):
-    value = list(map(lambda x: x(i, 2), func))
-    print(value)
-
-
+naive = NaiveBayes()
+naive.load_positive_document()
